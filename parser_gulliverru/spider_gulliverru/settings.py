@@ -2,7 +2,6 @@ import sys
 
 print(sys.path)
 
-
 from spider_gulliverru.spiders.config import parcer_name
 
 BOT_NAME = f'spider_{parcer_name}'
@@ -14,7 +13,7 @@ FEED_EXPORT_ECODING = 'utf-8'
 FEED_EXPORT_FIELDS = ['product_url', 'name', 'body', 'image', 'article', 'price', 'price_old', 'vendor', 'amount', 'folder', 'country', 'no_country']
 
 FEED_FORMAT = 'csv'
-FEED_URI = f'{parcer_name}_result.csv'
+FEED_URI = f'{parcer_name}_result_%(time)s.csv'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:39.0) Gecko/20100101 Firefox/39.0'
@@ -89,3 +88,7 @@ ROBOTSTXT_OBEY = False
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+# for variable in ["BOT_NAME", "age", "height"]:
+#     a_dict[variable] = eval(variable)
+

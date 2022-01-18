@@ -8,10 +8,7 @@ add_paths()
 
 from items import Product
 from manufacturers_countries import manufacturers_country
-from settings import FEED_EXPORT_ECODING, FEED_EXPORT_FIELDS, FEED_FORMAT, FEED_URI
-
-with open(FEED_URI, 'w') as data:
-    print('Output File Cleaned')
+from settings import FEED_EXPORT_ECODING, FEED_EXPORT_FIELDS, FEED_FORMAT, FEED_URI, USER_AGENT
 
 articles = []
 prices = []
@@ -101,7 +98,8 @@ settings = {
 'FEED_FORMAT' : FEED_FORMAT,
 'FEED_EXPORT_ECODING': FEED_EXPORT_ECODING,
 'FEED_URI' : FEED_URI,
-'FEED_EXPORT_FIELDS' : FEED_EXPORT_FIELDS
+'FEED_EXPORT_FIELDS' : FEED_EXPORT_FIELDS,
+'USER_AGENT' : USER_AGENT,
 }
 
 # Taking settings and starting spider through Twisted reactor
