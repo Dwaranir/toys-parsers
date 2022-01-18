@@ -14,4 +14,4 @@ To use you need restore python venv in /root project dir using requirements.txt
 4. Restore packages using requirements.txt, just run:
    pip install -r requirements.txt
 
-To use parcers run main.py (in progress)
+To use parcers fill the /root/inputdata.csv and run toys-parcers.bat

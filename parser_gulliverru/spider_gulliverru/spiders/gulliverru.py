@@ -1,5 +1,6 @@
 import scrapy
 import csv
+import subprocess
 from scrapy.crawler import CrawlerProcess
 
 from config import parcer_name, input_data, add_paths
@@ -106,3 +107,7 @@ settings = {
 process = CrawlerProcess(settings)
 process.crawl(GulliverRuSpider)
 process.start()
+
+print(f'\n\n\n\n\nCrawler {parcer_name} Finished')
+
+subprocess.call('toys-parcers.py', shell=True)
