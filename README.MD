@@ -3,7 +3,7 @@ to search goods on sites and extract required data to .csv format.
 
 To use you need restore python venv in /root project dir using requirements.txt
 
-1. Git clone project\
+1. Git clone project
 
 2. Make sure you are in /root folder of project and run:\
    python -m venv venv

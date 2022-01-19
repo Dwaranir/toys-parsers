@@ -20,9 +20,9 @@ tasks = {
 user_choise = 'user_choise'
 
 while user_choise not in m_menu:
-    print('\nSelect what to do: \n')
-    print(*[str(k) + ':' + str(v) for k,v in m_menu.items()], sep='\n')
-    user_choise = int(input())
+    print('Type a number of required task: \n')
+    print(*[str(k) + ' : ' + str(v) for k,v in m_menu.items()], sep='\n')
+    user_choise = int(input('\n'))
 
 if user_choise != 0:
     parcer_name = tasks[user_choise].replace('.py','')

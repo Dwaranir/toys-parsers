@@ -6,6 +6,7 @@ manufacturers_country = {
     "Bruder": "Германия",
     "Button Blue мягкая игрушка": "Россия",
     "CAT": "Вьетнам",
+    "Danko Toys": "Украина",
     "Disney": "США",
     "Diva Milano": "Россия",
     "Geomecha": "Вьетнам",
