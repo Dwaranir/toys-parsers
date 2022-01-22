@@ -5,7 +5,6 @@
 
 import scrapy
 
-
 class Product(scrapy.Item):
 
     product_url_didikz = scrapy.Field()

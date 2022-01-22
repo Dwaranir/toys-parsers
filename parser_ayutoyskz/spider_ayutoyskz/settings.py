@@ -1,4 +1,6 @@
-from spider_didikz.spiders.config import parcer_name
+import sys
+
+from spider_ayutoyskz.spiders.config import parcer_name
 
 BOT_NAME = f'spider_{parcer_name}'
 
@@ -6,10 +8,10 @@ SPIDER_MODULES = [f'spider_{parcer_name}']
 NEWSPIDER_MODULE = f'spider_{parcer_name}'
 
 FEED_EXPORT_ECODING = 'utf-8'
-FEED_EXPORT_FIELDS = ['article', 'price_old', 'price', 'price_didikz', 'name_didikz', 'product_url_didikz']
+FEED_EXPORT_FIELDS = ['article', 'price_old', 'price', 'price_ayutoyskz', 'price_didikz', 'name_ayutoyskz', 'name_didikz', 'product_url_ayutoyskz', 'product_url_didikz']
 
 FEED_FORMAT = 'csv'
-FEED_URI = f'{parcer_name}_result.csv'
+FEED_URI = f'{parcer_name}_result_%(time)s.csv'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:39.0) Gecko/20100101 Firefox/39.0'
@@ -60,9 +62,9 @@ DOWNLOAD_DELAY = 1
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    'spider_didikz.pipelines.DiDiKzPipeline': 300,
-# }
+#ITEM_PIPELINES = {
+#    'SpiderGulliverRuOld.pipelines.SpidergulliverruPipeline': 300,
+#}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
