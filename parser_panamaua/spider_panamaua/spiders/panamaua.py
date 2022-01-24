@@ -1,7 +1,6 @@
 import scrapy
 import csv
 import subprocess
-import w3lib.html
 from scrapy.crawler import CrawlerProcess
 
 from config import parcer_name, input_data, add_paths
@@ -10,7 +9,7 @@ add_paths()
 
 from items import Product
 from manufacturers_countries import manufacturers_country
-from settings import FEED_EXPORT_ECODING, FEED_EXPORT_FIELDS, FEED_FORMAT, FEED_URI, USER_AGENT, DOWNLOAD_DELAY
+from settings import FEED_EXPORT_ECODING, FEED_EXPORT_FIELDS, FEED_FORMAT, FEED_URI, USER_AGENT
 
 articles = []
 prices = []
@@ -29,41 +28,46 @@ with open(input_data, "r", encoding="utf8") as data:
         old_prices.append(i["Old Price"])
         manufacturers.append(i["Manufacturers"])
 
-# Main spider, firstly it searching through site using articles of goods,
-# then, using got links, it gathering needed goods and export result to csv
-class FlipKzSpider(scrapy.Spider):
-    name = parcer_name
-    allowed_domains = ['flip.kz']
-    start_urls = []
-    iter_counter = 0
+def filters_choices():
+    vendor_filter = {
+            1 : ['Danko Toys', 27453],
+        }
 
-    filters = {
-        1 : '8980',
-        0 : 'blank'
-    }
-
-    filters_desc = {
-        1 : 'Danko Toys'
-    }
-
-    company_filter = 'blank'
+    company_filter_url = 'blank'
 
     print('Choose search filter by company: ')
-    print(*[str(k) + ' : ' + str(v) for k,v in filters_desc.items()], sep='\n')
-    user_filter_choise = int(input('\n'))
-    company_filter = filters[user_filter_choise]
+    print(*[str(k) + ' : ' + str(v[0]) for k,v in vendor_filter.items()], sep='\n')
+    user_filter_choice = int(input('\n'))
+
+    company_filter_url = vendor_filter[user_filter_choice][1]
+    company_name = vendor_filter[user_filter_choice][0]
+
+    print(vendor_filter[user_filter_choice])
+
+    s_filters = {
+        'vendor': [company_name, company_filter_url]
+    }
+
+    print(s_filters)
+
+    return s_filters
+
+search_filters = filters_choices()
+
+# Main spider, firstly it searching through site using articles of goods,
+# then, using got links, it gathering needed goods and export result to csv
+class PanamaUaSpider(scrapy.Spider):
+    name = parcer_name
+    allowed_domains = ['panama.ua']
+    start_urls = []
 
 # Making list of starting urls using articles of goods
-    if company_filter != 'blank':
-        for art in articles:
-            start_urls += [f"https://www.flip.kz/search?search={art}&filter-show=1&filter-i411={company_filter}"]
-    else:
-        for art in articles:
-            start_urls += [f"https://www.flip.kz/search?search={art}"]
+    for art in articles:
+        start_urls += [f"https://panama.ua/search/?q={art}#o[103][]={search_filters['vendor'][1]}&search={art}&"]
 
 # Searching through site using starting urls and pass it to the 'parse_details' function
     def parse(self, response):
-        link = f"https://www.flip.kz/{response.css('.p-10 a').xpath('@href').get()}" 
+        link = 'https://panama.ua/' + response.css('.product__link').xpath('@href').get()
 
         yield scrapy.Request(link, callback=self.parse_details, dont_filter=True)
 
@@ -71,39 +75,37 @@ class FlipKzSpider(scrapy.Spider):
     def parse_details(self, response):
         
 # Using data from site
+        article = response.css('[itemprop="sku"] ::text').get()
+        raw_body = response.css('[itemprop="description"] p').extract()
+        body = ""
+        vendor = response.css('[itemprop="brand"] a ::text').get()
+        for i in raw_body:
+            body += i
         
-        # body = ""
-        # for i in raw_body:
-        #     body += i.strip().replace('\n','</br>')
-        vendor = response.css('div div p a b').get().replace('<b>', '').replace('</b>', '')
-        raw_body = response.css('span[itemprop="description"]::text').extract()
-        body = ''.join(raw_body) 
     
 # Formating body with required data
-        if vendor in manufacturers_country:
-            country = f"</br>Производитель: {manufacturers_country[vendor]}. Товар сертифицирован"
-            no_country = "True"
-        else:
-            country = f"</br>Производитель: Китай. Товар сертифицирован"
-            no_country = "False"
+        # if vendor in manufacturers_country:
+        #     country = f"</br>Производитель: {manufacturers_country[vendor]}. Товар сертифицирован"
+        #     no_country = "True"
+        # else:
+        #     country = f"</br>Производитель: Китай. Товар сертифицирован"
+        #     no_country = "False"
+        
+        country = 'Товар сертифицирован'
+        no_country = 'False'
 
 # Using data from inputdata.csv
-        
-        article = articles[self.iter_counter]
         price = prices[articles.index(article)]
         price_old = old_prices[articles.index(article)]
         manufacturer = manufacturers[articles.index(article)]
-        self.iter_counter += 1
-        
 
 
 # Generates an object for export
         Item = Product()
 
-        Item["name"] = response.css('h1 ::text').get().lower().title()
-        Item["body"] = '<div align="justify">' + body + country + '</div>'
-        # Item["body"] = '<div align="justify">' + body.replace('</br>                                        ', "") + "</br>" + country + '</div>'
-        Item["image"] = [url.replace('//', 'https://') for url in response.css('.prod_pic a').xpath('@href').getall()]
+        Item["name"] = response.css('.product-item__name::text').get().replace(f' - {vendor}', '')
+        Item["body"] = '<div align="justify">' + body + "</br>" + country + '</div>'
+        Item["image"] = response.css('.product__gallery-page-item img').xpath('@src').getall()
         Item["article"] = article
         Item["price"] = price
         Item["price_old"] = price_old
@@ -129,12 +131,11 @@ settings = {
 'FEED_URI' : FEED_URI,
 'FEED_EXPORT_FIELDS' : FEED_EXPORT_FIELDS,
 'USER_AGENT' : USER_AGENT,
-'DOWNLOAD_DELAY' : DOWNLOAD_DELAY,
 }
 
 # Taking settings and starting spider through Twisted reactor
 process = CrawlerProcess(settings)
-process.crawl(FlipKzSpider)
+process.crawl(PanamaUaSpider)
 process.start()
 
 print(f'\n\n\n\n\nCrawler {parcer_name} Finished')
